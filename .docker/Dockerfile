@@ -6,13 +6,23 @@ RUN rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
 RUN yum install -y yum-plugin-replace
 
 RUN yum install -y httpd
-RUN yum install -y mod_php71w php71w-common
+
+RUN yum install -y mod_php71w php71w-common php71w-cli
+RUN yum install -y php71w-bcmath php71w-mbstring
 RUN yum install -y php71w-mysql php71w-pdo
-RUN yum install -y php71w-cli
+
+RUN yum install -y rabbitmq-server
 
 ENV PROJECT_PATH=/var/www/project
 ENV LOG_DIR=${PROJECT_PATH}/logs
 ENV USER_APACHE=apache
+
+ENV RABBITMQ_CONFIG_DIR=${PROJECT_PATH}/config
+ENV RABBITMQ_CONFIG_FILE=${RABBITMQ_CONFIG_DIR}/rabbitmq.json
+ENV RABBITMQ_HOST=localhost
+ENV RABBITMQ_PORT=1111
+ENV RABBITMQ_USER=guest
+ENV RABBITMQ_PASS=guest
 
 RUN rm -rf /var/www/html && ln -nfs ${PROJECT_PATH}/web /var/www/html
 RUN rm /etc/httpd/conf.d/welcome.conf

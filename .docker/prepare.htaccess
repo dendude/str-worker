@@ -1,6 +1,6 @@
 Options +FollowSymLinks
 
-php_value error_log <%=log_path%>/error.log
+php_value error_log <%=log_path %>/error.log
 php_value error_reporting 6135
 php_value log_errors on
 

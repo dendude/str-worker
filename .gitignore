@@ -1,4 +1,6 @@
 .idea/
 vendor/
+logs/
+config/
 composer.lock
 web/.htaccess
