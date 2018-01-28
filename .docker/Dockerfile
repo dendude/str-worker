@@ -20,7 +20,7 @@ ENV USER_APACHE=apache
 RUN rm -rf /var/www/html && ln -nfs ${PR_ROOT}/web /var/www/html
 RUN rm /etc/httpd/conf.d/welcome.conf
 
-RUN rabbitmq-server start
+RUN rabbitmq-server start &
 RUN php ${PR_ROOT}/service.php &
 
 EXPOSE 80
