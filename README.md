@@ -12,6 +12,10 @@ Docker
 
 > Логи хранятся вне контейнера, в директории `./logs/`
 
+> После запуска контейнера автоматически запускается наблюдатель очереди StrListener::run
+
+> Запросы приходят в web/index.php, которые ставят в очередь задания StrRequest::getResponse
+
 ---
 
 #### Запуск через `docker run` (актуально для MacOS)
@@ -39,4 +43,11 @@ phpunit tests
 ```shell
 ps a | grep -e 'service\.php$' # колько уже запущено
 php ${PR_ROOT}/service.php & # отвязываемся от процесса и получем pid для дальнейшего kill
+```
+
+#### Пример запроса
+
+```shell
+curl -d="{\"job\":{\"text\":\"some text\", \"methods\":[\"removeSpaces\"]}}" localhost:8000
+# вернет {"text":"sometext"}
 ```

@@ -39,7 +39,7 @@ class StrRequest
     public function getResponse($msg) {
         
         $this->response = null;
-        $this->corr_id = uniqid('corr_');
+        $this->corr_id = uniqid('corr_', true);
         
         $msg = new AMQPMessage($msg, [
             'correlation_id' => $this->corr_id,
