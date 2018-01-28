@@ -13,19 +13,15 @@ RUN yum install -y php71w-mysql php71w-pdo
 
 RUN yum install -y rabbitmq-server
 
-ENV PROJECT_PATH=/var/www/project
-ENV LOG_DIR=${PROJECT_PATH}/logs
+ENV PR_ROOT=/var/www/project
+ENV LOG_DIR=${PR_ROOT}/logs
 ENV USER_APACHE=apache
 
-ENV RABBITMQ_CONFIG_DIR=${PROJECT_PATH}/config
-ENV RABBITMQ_CONFIG_FILE=${RABBITMQ_CONFIG_DIR}/rabbitmq.json
-ENV RABBITMQ_HOST=localhost
-ENV RABBITMQ_PORT=1111
-ENV RABBITMQ_USER=guest
-ENV RABBITMQ_PASS=guest
-
-RUN rm -rf /var/www/html && ln -nfs ${PROJECT_PATH}/web /var/www/html
+RUN rm -rf /var/www/html && ln -nfs ${PR_ROOT}/web /var/www/html
 RUN rm /etc/httpd/conf.d/welcome.conf
+
+RUN rabbitmq-server start
+RUN php ${PR_ROOT}/web/_service.php &
 
 EXPOSE 80
 

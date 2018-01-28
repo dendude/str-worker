@@ -1,6 +1,0 @@
-{
-    "host": "<%=host %>",
-    "port": "<%=port %>",
-    "user": "<%=user %>",
-    "pass": "<%=pass %>"
-}
