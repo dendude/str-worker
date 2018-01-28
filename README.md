@@ -19,7 +19,7 @@ Docker
 ```shell
 cd project_path
 docker build --no-cache=true -t str-worker .docker
-docker run -d -p 8000:80 -v $(pwd):/var/www/project --name str-worker str-worker
+docker run -d -p 8000:80 -p 5672:5672 -v $(pwd):/var/www/project --name str-worker str-worker
 ```
 
 #### Подтягиваем необходимые зависимости
@@ -32,4 +32,11 @@ composer update
 
 ```shell
 phpunit tests
+```
+
+#### Смотрим кол-во воркеров и увеличиваем если нужно
+
+```shell
+ps a | grep -e 'service\.php$' # колько уже запущено
+php ${PR_ROOT}/service.php & # отвязываемся от процесса и получем pid для дальнейшего kill
 ```

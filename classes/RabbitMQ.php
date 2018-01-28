@@ -11,7 +11,7 @@ namespace App\Classes;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 /**
- * pattern - singleton
+ * @todo singleton/multiton design pattern
  *
  * Class RabbitMQ
  * @package App\Classes
@@ -22,8 +22,6 @@ class RabbitMQ
     const TYPE_OTHER = 'other';
     
     /**
-     * pattern - multiton
-     *
      * @var AMQPStreamConnection[]
      */
     protected static $connections = [];

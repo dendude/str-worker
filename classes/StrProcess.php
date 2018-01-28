@@ -7,6 +7,7 @@
  */
 
 namespace App\Classes;
+use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * Class StrProcess
@@ -25,23 +26,10 @@ namespace App\Classes;
  */
 class StrProcess
 {
-    const QUEUE_NAME = 'strProcess';
-    
-    public function publish($msg) {
-        
-        $connection = RabbitMQ::getInstance();
-        $channel = $connection->channel();
-        $channel->queue_declare(self::QUEUE_NAME, false, true, false, false);
-        
-        $channel->basic_publish($msg, '', self::QUEUE_NAME);
-        
-        $channel->close();
-        $connection->close();
-    }
-    
     /**
      * @param $msg - json-object
      *
+     * @return array
      * @throws \Exception
      * @example
      * {
@@ -70,10 +58,7 @@ class StrProcess
                 $result = call_user_func_array([$this, $method], [$result]);
             }
             
-            
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['text' => $result], JSON_PRETTY_PRINT);
-            return;
+            return ['text' => $result];
         }
     
         throw new \Exception('Wrong structure of job');

@@ -8,10 +8,14 @@
 
 namespace App\Classes;
 
+use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
+
 /**
  * Class StrListener
  *
- * запускается как микросервис
+ * запускается как микросервис, ожидающий работу
  *
  * @package App\Classes
  */
@@ -21,29 +25,43 @@ class StrListener
     
     public static function run() {
         
-        $self = new self();
-        
         $connection = RabbitMQ::getInstance();
+        
         $channel = $connection->channel();
-        $channel->queue_declare(StrProcess::QUEUE_NAME, false, true, false, false);
+        $channel->queue_declare(StrRequest::QUEUE_NAME, false, false, false, false);
+    
+        self::listenSigOuts($channel, $connection);
         
         while (true) {
             
             try {
-                
-                $channel->basic_consume(
-                    StrProcess::QUEUE_NAME,         // очередь
-                    '',                             // тег получателя
-                    false,                          // не локальный - TRUE: сервер не будет отправлять сообщения соединениям, которые сам опубликовал
-                    false,                          // отправлять соответствующее подтверждение обработчику, как только задача будет выполнена
-                    false,                          // эксклюзивная - к очереди можно получить доступ только в рамках текущего соединения
-                    false,                          // не ждать - TRUE: сервер не будет отвечать методу. Клиент не должен ждать ответа
-                    [$self, 'process']              // функция обратного вызова - метод, который будет принимать сообщение
-                );
+    
+                $callback = function(AMQPMessage $req) {
+                    
+                    $obj = new StrProcess();
+                    $result = $obj->process($req->body);
+        
+                    $msg = new AMQPMessage($result, [
+                        'correlation_id' => $req->get('correlation_id')
+                    ]);
+    
+                    /** @var $channel AMQPChannel */
+                    
+                    $channel = $req->delivery_info['channel'];
+                    $channel->basic_publish($msg, '', $req->get('reply_to'));
+    
+                    $channel = $req->delivery_info['channel'];
+                    $channel->basic_ack($req->delivery_info['delivery_tag']);
+                };
+    
+                $channel->basic_qos(null, 1, null);
+                $channel->basic_consume(StrRequest::QUEUE_NAME, '', false, false, false, false, $callback);
                 
                 while (count($channel->callbacks)) {
                     $channel->wait();
                 }
+                
+                unset($callback);
                 
             } catch (\Exception $e) {
                 
@@ -51,8 +69,22 @@ class StrListener
                 echo $e->getMessage() . PHP_EOL;
             }
         }
+    }
+    
+    /**
+     * выходим в случае системных вызовов
+     *
+     * @param AMQPChannel $channel
+     * @param AMQPStreamConnection $connection
+     */
+    protected static function listenSigOuts(AMQPChannel $channel, AMQPStreamConnection $connection) {
         
-        $channel->close();
-        $connection->close();
+        foreach ([SIGKILL, SIGTERM] AS $sigNo) {
+            
+            pcntl_signal($sigNo, function() use ($channel, $connection) {
+                $channel->close();
+                $connection->close();
+            });
+        }
     }
 }

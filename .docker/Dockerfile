@@ -20,10 +20,10 @@ ENV USER_APACHE=apache
 RUN rm -rf /var/www/html && ln -nfs ${PR_ROOT}/web /var/www/html
 RUN rm /etc/httpd/conf.d/welcome.conf
 
-RUN rabbitmq-server start &
-RUN php ${PR_ROOT}/service.php &
+RUN chkconfig rabbitmq-server on
 
-EXPOSE 80
-
+EXPOSE 80 5672
 ADD run-httpd.sh /run-httpd.sh
+
 CMD ["/run-httpd.sh"]
+CMD ["sh", "-c", "php ${PR_ROOT}/service.php &"]
