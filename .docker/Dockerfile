@@ -21,7 +21,7 @@ RUN rm -rf /var/www/html && ln -nfs ${PR_ROOT}/web /var/www/html
 RUN rm /etc/httpd/conf.d/welcome.conf
 
 RUN rabbitmq-server start
-RUN php ${PR_ROOT}/web/_service.php &
+RUN php ${PR_ROOT}/service.php &
 
 EXPOSE 80
 
