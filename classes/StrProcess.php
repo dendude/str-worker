@@ -7,7 +7,6 @@
  */
 
 namespace App\Classes;
-use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * Class StrProcess
@@ -19,6 +18,8 @@ use PhpAmqpLib\Message\AMQPMessage;
  * Экранировать спец-символы
  * Удалить символы [.,/!@#$%&*()]
  * Преобразовать в целое число (найти в тексте)
+ *
+ * Добвляем новый метод и он сразу доступен для вызова без доработки метода StrProcess::process
  *
  * @see https://gitlab.com/turbo-public/backend-task-patterns/wikis/Home
  *
