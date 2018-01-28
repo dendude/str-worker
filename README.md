@@ -7,7 +7,7 @@ Docker
 1. Для доступа в shell контейнера:
 
     ```shell
-    docker-compose exec {service} /bin/bash
+    docker exec -it {service} /bin/bash
     ```
 
 > Логи хранятся вне контейнера, в директории `./logs/`
@@ -41,7 +41,7 @@ phpunit tests
 #### Смотрим кол-во воркеров и увеличиваем если нужно
 
 ```shell
-ps a | grep -e 'service\.php$' # колько уже запущено
+ps a | grep -e 'service\.php$' # сколько уже запущено
 php ${PR_ROOT}/service.php & # отвязываемся от процесса и получем pid для дальнейшего kill
 ```
 
