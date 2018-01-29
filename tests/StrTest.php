@@ -46,11 +46,7 @@ class StrTest extends TestCase
             ]
         ];
         
-        ob_start();
-        exec('curl -d="' . addslashes(json_encode($array)) . '" localhost:8000');
-        $content = ob_get_contents();
-        ob_end_clean();
-        
+        $result = exec('curl -d="' . addslashes(json_encode($array)) . '" localhost:8000');        
         $data = json_decode($content, true);
         
         return ($data['text'] ?? null);
